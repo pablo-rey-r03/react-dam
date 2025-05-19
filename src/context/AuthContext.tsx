@@ -1,26 +1,48 @@
-import { createContext, useState, type ReactNode } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import type LoginDTO from "../model/dto/LoginDTO";
-import { login } from "../service/AuthService";
+import * as authService from "../service/AuthService";
 
 interface AuthContextType {
   token: string | null;
-  signIn: (data: LoginDTO) => Promise<void>;
-  signOut: () => void;
+  login: (data: LoginDTO) => Promise<void>;
+  logout: () => void;
 }
 
-export const AuthContext = createContext<AuthContextType>({} as any);
+interface AuthProviderProps {
+  children: React.ReactNode
+}
 
-export const AuthProvider = ({children}: {children: ReactNode}) => {
-  const [token, setToken] = useState<string|null>(null);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-  const signIn = async (data: LoginDTO) => {
-    const {token} = await login(data);
+export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
+  const [token, setToken] = useState<string | null>(localStorage.getItem("token"));
+
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem("token", token)
+    } else {
+      localStorage.removeItem("token");
+    }
+  }, [token])
+
+  const login = async (data: LoginDTO) => {
+    const {token} = await authService.login(data);
     setToken(token);
-    localStorage.setItem("token", token);
   }
 
-  const signOut = () => {
+  const logout = () => {
     setToken(null);
-    localStorage.removeItem("token");
   }
-} 
+
+  return (
+    <AuthContext.Provider value={{token, login, logout}}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export function useAuth(): AuthContextType {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuth debe usarse dentro del provider.");
+  return ctx;
+}
