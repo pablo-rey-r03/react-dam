@@ -1,10 +1,12 @@
-import { useAuth } from './context/AuthContext'
-import { LoginForm } from './components/LoginForm'
+import { AuthProvider } from './context/AuthContext'
+import { AuthTab } from './components/AuthTab';
 
 function App() {
-  const {token} = useAuth();
-
-  return token ? <div>Hola</div> : <LoginForm />
+    return (
+        <AuthProvider>
+            <AuthTab />
+        </AuthProvider>
+    )
 }
 
 export default App

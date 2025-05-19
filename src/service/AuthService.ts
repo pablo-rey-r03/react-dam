@@ -9,30 +9,30 @@ import type ResponseEntity from "../model/msg/ResponseEntity"
 const AUTH_API = API_URL + "/auth"
 
 export const login = async (data: LoginDTO): Promise<LoginResponse> => {
-  const res = await fetch(`${AUTH_API}/login`, {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify(data)
-  });
+    const res = await fetch(`${AUTH_API}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    });
 
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(await error?.message ?? "Error en el inicio de sesión.");
-  }
-  return (await res.json()) as LoginResponse;
+    if (!res.ok) {
+        const error: ErrorMessage = await res.json();
+        throw error;
+    }
+    return (await res.json()) as LoginResponse;
 }
 
 export const register = async (data: RegisterDTO): Promise<ResponseEntity<Employee>> => {
-  const res = await fetch(`${AUTH_API}/register`, {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify(data)
-  });
+    const res = await fetch(`${AUTH_API}/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    });
 
-  if (!res.ok) {
-    const error: ErrorMessage = await res.json();
-    throw new Error(error?.detail ?? "Error en el registro");
-  }
+    if (!res.ok) {
+        const error: ErrorMessage = await res.json();
+        throw error;
+    }
 
-  return (await res.json()) as ResponseEntity<Employee>;
+    return (await res.json()) as ResponseEntity<Employee>;
 }
