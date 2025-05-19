@@ -1,6 +1,10 @@
 import { API_URL } from "../config"
 import type LoginDTO from "../model/dto/LoginDTO"
-import type LoginResponse from "../model/dto/LoginResponse"
+import type RegisterDTO from "../model/dto/RegisterDTO"
+import type Employee from "../model/Employee"
+import type ErrorMessage from "../model/msg/ErrorMessage"
+import type LoginResponse from "../model/msg/LoginResponse"
+import type ResponseEntity from "../model/msg/ResponseEntity"
 
 const AUTH_API = API_URL + "/auth"
 
@@ -14,7 +18,21 @@ export const login = async (data: LoginDTO): Promise<LoginResponse> => {
   if (!res.ok) {
     const error = await res.json();
     throw new Error(await error?.message ?? "Error en el inicio de sesión.");
-    
   }
   return (await res.json()) as LoginResponse;
+}
+
+export const register = async (data: RegisterDTO): Promise<ResponseEntity<Employee>> => {
+  const res = await fetch(`${AUTH_API}/register`, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(data)
+  });
+
+  if (!res.ok) {
+    const error: ErrorMessage = await res.json();
+    throw new Error(error?.detail ?? "Error en el registro");
+  }
+
+  return (await res.json()) as ResponseEntity<Employee>;
 }

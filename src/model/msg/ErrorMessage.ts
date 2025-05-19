@@ -1,5 +1,6 @@
 export default interface ErrorMessage {
-  status: number,
-  details: string,
-  stack: string
+  status: number;
+  error: string
+  detail: string;
+  stack: string;
 }
