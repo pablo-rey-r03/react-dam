@@ -14,6 +14,7 @@ import { Calendar } from "primereact/calendar";
 import { getAllCompanies } from "../service/CompanyService";
 import type ErrorMessage from "../model/msg/ErrorMessage";
 import { Button } from "primereact/button";
+import { useAuth } from "../context/AuthContext";
 
 export const RegisterForm: React.FC = () => {
     const [email, setEmail] = useState<string>("");
@@ -26,11 +27,13 @@ export const RegisterForm: React.FC = () => {
     const [country, setCountry] = useState<CountryCode | undefined>(undefined);
     const [job, setJob] = useState<string>("");
     const [department, setDepartment] = useState<string>("");
-    const [companyId, setCompanyId] = useState<number>(0);
+    const [companyId, setCompanyId] = useState<number | undefined>(undefined);
     const [companies, setCompanies] = useState<Company[]>();
     const [loading, setLoading] = useState<boolean>(true);
 
     const toast = useRef<Toast>(null);
+
+    const {login} = useAuth();
 
     useEffect(() => {
         getAllCompanies()
@@ -57,8 +60,55 @@ export const RegisterForm: React.FC = () => {
     const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!country) return;
-        if (!startDate) return;
+        if (!country) {
+          toast.current?.show({
+                    severity: "error",
+                    summary: "Error en el registro",
+                    detail: "La nacionalidad es obligatoria",
+                    life: 3000
+          });
+          return;
+        }
+        
+        if (!startDate) {
+          toast.current?.show({
+                    severity: "error",
+                    summary: "Error en el registro",
+                    detail: "La fecha de contratación es obligatoria",
+                    life: 3000
+          });
+          return;
+        }
+
+        if (!companyId || companyId == 0) {
+          toast.current?.show({
+                    severity: "error",
+                    summary: "Error en el registro",
+                    detail: "Debes trabajar para una empresa registrada para acceder a la plataforma de administración",
+                    life: 3000
+          });
+          return;
+        }
+
+        if (password.length < 5) {
+          toast.current?.show({
+                    severity: "error",
+                    summary: "Error en el registro",
+                    detail: "La contraseña es demasiado breve",
+                    life: 3000
+          });
+          return;
+        }
+
+        if (password !== rPw) {
+          toast.current?.show({
+                    severity: "error",
+                    summary: "Error en el registro",
+                    detail: "Las contraseñas deben ser coincidentes ",
+                    life: 3000
+          });
+          return;
+        }
 
         const jsDate: Date = startDate;
         const iso = jsDate.toISOString().substring(0, 10);
@@ -80,6 +130,8 @@ export const RegisterForm: React.FC = () => {
         })
             .then(res => {
                 message = res.message;
+
+                login({email, password});
 
                 toast.current?.show({
                     severity: "success",
@@ -125,11 +177,13 @@ export const RegisterForm: React.FC = () => {
                         optionValue="value"
                         placeholder="Selecciona un país"
                         filter
+                        required
+                        filterLocale="es"
                     />
-                    <label htmlFor="countryR">País</label>
+                    <label htmlFor="countryR">Nacionalidad</label>
                 </FloatLabel>
                 <FloatLabel>
-                    <Calendar dateFormat="yy-mm-dd" id="startDateR" value={startDate} onChange={e => setStartDate(e.value!)} showIcon locale="es" />
+                    <Calendar dateFormat="yy-mm-dd" id="startDateR" value={startDate} onChange={e => setStartDate(e.value!)} showIcon locale="es" maxDate={new Date()} required />
                     <label htmlFor="startDateR">Fecha de contratación</label>
                 </FloatLabel>
                 <FloatLabel>
@@ -143,6 +197,8 @@ export const RegisterForm: React.FC = () => {
                         placeholder="Selecciona una empresa"
                         filter
                         disabled={loading}
+                        required
+                        filterLocale="es"
                     />
                     <label htmlFor="companyR">Empresa</label>
                 </FloatLabel>
@@ -167,6 +223,7 @@ export const RegisterForm: React.FC = () => {
                     <label htmlFor="confirmR">Repetir contraseña</label>
                 </FloatLabel>
                 {(password.length != 0 && rPw.length != 0 && password !== rPw) && <Message severity="warn" text="Las contraseñas no coinciden" />}
+                {(password.length != 0 && password.length < 5) && <Message severity="warn" text="La contraseña es demasiado breve" />}
                 <Button type="submit" label="Crear cuenta y registrarse" className="p-mt-2" icon="pi pi-user-plus" />
             </form>
         </div>
