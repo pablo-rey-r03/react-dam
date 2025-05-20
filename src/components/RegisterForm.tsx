@@ -15,6 +15,7 @@ import { getAllCompanies } from "../service/CompanyService";
 import type ErrorMessage from "../model/msg/ErrorMessage";
 import { Button } from "primereact/button";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export const RegisterForm: React.FC = () => {
     const [email, setEmail] = useState<string>("");
@@ -32,8 +33,8 @@ export const RegisterForm: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
 
     const toast = useRef<Toast>(null);
-
-    const {login} = useAuth();
+    const { login } = useAuth();
+    const navigate = useNavigate();
 
     useEffect(() => {
         getAllCompanies()
@@ -61,59 +62,57 @@ export const RegisterForm: React.FC = () => {
         e.preventDefault();
 
         if (!country) {
-          toast.current?.show({
-                    severity: "error",
-                    summary: "Error en el registro",
-                    detail: "La nacionalidad es obligatoria",
-                    life: 3000
-          });
-          return;
+            toast.current?.show({
+                severity: "error",
+                summary: "Error en el registro",
+                detail: "La nacionalidad es obligatoria",
+                life: 3000
+            });
+            return;
         }
-        
+
         if (!startDate) {
-          toast.current?.show({
-                    severity: "error",
-                    summary: "Error en el registro",
-                    detail: "La fecha de contratación es obligatoria",
-                    life: 3000
-          });
-          return;
+            toast.current?.show({
+                severity: "error",
+                summary: "Error en el registro",
+                detail: "La fecha de contratación es obligatoria",
+                life: 3000
+            });
+            return;
         }
 
         if (!companyId || companyId == 0) {
-          toast.current?.show({
-                    severity: "error",
-                    summary: "Error en el registro",
-                    detail: "Debes trabajar para una empresa registrada para acceder a la plataforma de administración",
-                    life: 3000
-          });
-          return;
+            toast.current?.show({
+                severity: "error",
+                summary: "Error en el registro",
+                detail: "Debes trabajar para una empresa registrada para acceder a la plataforma de administración",
+                life: 3000
+            });
+            return;
         }
 
         if (password.length < 5) {
-          toast.current?.show({
-                    severity: "error",
-                    summary: "Error en el registro",
-                    detail: "La contraseña es demasiado breve",
-                    life: 3000
-          });
-          return;
+            toast.current?.show({
+                severity: "error",
+                summary: "Error en el registro",
+                detail: "La contraseña es demasiado breve",
+                life: 3000
+            });
+            return;
         }
 
         if (password !== rPw) {
-          toast.current?.show({
-                    severity: "error",
-                    summary: "Error en el registro",
-                    detail: "Las contraseñas deben ser coincidentes ",
-                    life: 3000
-          });
-          return;
+            toast.current?.show({
+                severity: "error",
+                summary: "Error en el registro",
+                detail: "Las contraseñas deben ser coincidentes ",
+                life: 3000
+            });
+            return;
         }
 
         const jsDate: Date = startDate;
         const iso = jsDate.toISOString().substring(0, 10);
-
-        let message;
 
         await authService.register({
             name,
@@ -128,17 +127,9 @@ export const RegisterForm: React.FC = () => {
             job,
             company_id: companyId
         })
-            .then(res => {
-                message = res.message;
-
-                login({email, password});
-
-                toast.current?.show({
-                    severity: "success",
-                    summary: "¡Bienvenido!",
-                    detail: message,
-                    life: 3000
-                });
+            .then(() => {
+                login({ email, password });
+                navigate("/home");
             })
             .catch((err: ErrorMessage) => {
                 toast.current?.show({

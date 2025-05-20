@@ -5,23 +5,21 @@ import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { Button } from "primereact/button";
 import { FloatLabel } from "primereact/floatlabel";
+import { useNavigate } from "react-router-dom";
 
 export const LoginForm: React.FC = () => {
     const { login } = useAuth();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+
     const toast = React.useRef<Toast>(null);
+    const navigate = useNavigate();
 
     const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
             await login({ email, password });
-            toast.current?.show({
-                severity: "success",
-                summary: "!Bienvenido!",
-                detail: "Se ha iniciado sesión correctamente",
-                life: 3000
-            });
+            navigate("/home");
         } catch (err: any) {
             toast.current?.show({
                 severity: "error",

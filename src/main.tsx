@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import { AuthProvider } from "./context/AuthContext";
+import "./index.css";
 
 import 'primeflex/primeflex.css';
 import 'primereact/resources/themes/lara-dark-purple/theme.css';
@@ -9,6 +10,7 @@ import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 
 import { addLocale } from 'primereact/api';
+import { BrowserRouter } from 'react-router-dom';
 
 addLocale('es', {
     firstDayOfWeek: 1,
@@ -33,10 +35,11 @@ addLocale('es', {
 
 
 createRoot(document.getElementById('root')!).render(
-    <AuthProvider>
-        <StrictMode>
-            <App />
-        </StrictMode>
-    </AuthProvider>
-
+    <BrowserRouter>
+        <AuthProvider>
+            <StrictMode>
+                <App />
+            </StrictMode>
+        </AuthProvider>
+    </BrowserRouter>
 )
