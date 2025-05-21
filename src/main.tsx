@@ -9,7 +9,7 @@ import 'primereact/resources/themes/lara-dark-purple/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 
-import { addLocale } from 'primereact/api';
+import { addLocale, PrimeReactProvider } from 'primereact/api';
 import { BrowserRouter } from 'react-router-dom';
 
 addLocale('es', {

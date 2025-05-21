@@ -1,8 +1,8 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { AuthTab } from './components/AuthTab';
 import { PrivateRoute } from './security/PrivateRoute';
-import { Home } from './components/Home';
 import { ErrorPage } from './security/ErrorPage';
+import { MainLayout } from './components/MainLayout';
 
 function App() {
     const jwt: string | null = localStorage.getItem("token");
@@ -10,15 +10,15 @@ function App() {
         <Routes>
             <Route path='/'
                 element={
-                    jwt ? <Navigate to={"/home"} replace /> : <Navigate to={"/auth"} replace />
+                    jwt ? <Navigate to={"/home/dashboard"} replace /> : <Navigate to={"/auth"} replace />
                 }
             />
 
             <Route path='/auth' element={<AuthTab />} />
 
-            <Route path='/home' element={
+            <Route path='/home/*' element={
                 <PrivateRoute>
-                    <Home />
+                    <MainLayout />
                 </PrivateRoute>
             } />
 
