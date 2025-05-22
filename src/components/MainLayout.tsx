@@ -27,6 +27,7 @@ export const MainLayout: React.FC = () => {
 
 
     const items = [
+        { label: "Inicio", icon: "pi pi-home", command: () => navigate("/home/dashboard") },
         { label: 'Subcontratas', icon: 'pi pi-fw pi-briefcase', command: () => navigate('/home/companies') },
         { label: 'Proyectos', icon: 'pi pi-fw pi-briefcase', command: () => navigate('/home/projects') },
         { label: 'Informes', icon: 'pi pi-fw pi-chart-line', command: () => navigate('/home/reports') },
@@ -71,7 +72,7 @@ export const MainLayout: React.FC = () => {
     return (
         <div className="flex flex-col h-screen relative">
             <div className="relative">
-                <Menubar model={items} start={<div></div>} end={end} className="shadow-md" />
+                <Menubar model={items} start={<div></div>} end={end} className="shadow-md m-3" />
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
                     <Image src="/Numby-removebg-preview.png"
                         alt="logo"

@@ -6,7 +6,7 @@ import type SubcontractingRelationship from "../model/SubcontractingRelationship
 import { Toast } from "primereact/toast";
 import { useNavigate } from "react-router-dom";
 import { getEmployeeById } from "../service/EmployeeService";
-import { getSubcontractsRelationshipByCompanyId } from "../service/CompanyService";
+import { getSubcontractsRelationshipByContractorId } from "../service/CompanyService";
 import type ErrorMessage from "../model/msg/ErrorMessage";
 import { jwtDecode } from "jwt-decode";
 import type JWTDecoded from "../model/JWTDecoded";
@@ -29,7 +29,7 @@ export const Subs: React.FC = () => {
             .then(res => {
                 setEmployee(res);
                 setCompany(res.company);
-                return getSubcontractsRelationshipByCompanyId(res.company.id);
+                return getSubcontractsRelationshipByContractorId(res.company.id);
             })
             .then(data => {
                 setSubRels(data);
@@ -37,13 +37,14 @@ export const Subs: React.FC = () => {
                 setSubs(subLista);
             })
             .catch((err: ErrorMessage) => {
+                if (err.status == 204) return;
                 toast.current?.show({
                     severity: "error",
                     summary: "Error",
                     detail: err.detail,
                     life: 3000
                 });
-            })
+            });
     }, [employeeId]);
 
     const goToCompany = (id: number) => {
