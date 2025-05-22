@@ -6,6 +6,7 @@ import { Password } from "primereact/password";
 import { Button } from "primereact/button";
 import { FloatLabel } from "primereact/floatlabel";
 import { useNavigate } from "react-router-dom";
+import type ErrorMessage from "../model/msg/ErrorMessage";
 
 export const LoginForm: React.FC = () => {
     const { login } = useAuth();
@@ -17,17 +18,16 @@ export const LoginForm: React.FC = () => {
 
     const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        try {
-            await login({ email, password });
-            navigate("/home");
-        } catch (err: any) {
+        await login({ email, password })
+        .then(() => navigate("/home"))
+        .catch((err: ErrorMessage) => {
             toast.current?.show({
                 severity: "error",
                 summary: "Error en el inicio de sesión",
-                detail: "Las credenciales no son correctas",
+                detail: err.detail,
                 life: 3000
             });
-        }
+        });
     };
 
     return (
