@@ -38,7 +38,9 @@ createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
         <AuthProvider>
             <StrictMode>
-                <App />
+                <PrimeReactProvider>
+                    <App />
+                </PrimeReactProvider>
             </StrictMode>
         </AuthProvider>
     </BrowserRouter>

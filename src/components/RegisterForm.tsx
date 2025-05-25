@@ -128,9 +128,9 @@ export const RegisterForm: React.FC = () => {
             company_id: companyId
         })
             .then(() => {
-                login({ email, password });
-                navigate("/home");
+                return login({ email, password });
             })
+            .then(() => navigate("/home"))
             .catch((err: ErrorMessage) => {
                 toast.current?.show({
                     severity: "error",
@@ -142,81 +142,87 @@ export const RegisterForm: React.FC = () => {
     };
 
     return (
-        <div className="register-container">
-            <Toast ref={toast} />
-            <form onSubmit={onSubmit} className="register-form">
-                <h2>Registro</h2>
-                <FloatLabel>
-                    <InputText id="nameR" value={name} onChange={e => setname(e.target.value)} required />
-                    <label htmlFor="nameR">Nombre</label>
-                </FloatLabel>
-                <FloatLabel>
-                    <InputText id="surnameR" value={surname} onChange={e => setSurname(e.target.value)} />
-                    <label htmlFor="surnameR">Apellidos</label>
-                </FloatLabel>
-                <FloatLabel>
-                    <InputText id="nifR" value={nif} onChange={e => setNif(e.target.value)} required />
-                    <label htmlFor="nifR">NIF</label>
-                </FloatLabel>
-                <FloatLabel>
-                    <Dropdown
-                        id="countryR"
-                        value={country}
-                        options={COUNTRIES}
-                        onChange={e => setCountry(e.value)}
-                        optionLabel="label"
-                        optionValue="value"
-                        placeholder="Selecciona un país"
-                        filter
-                        required
-                        filterLocale="es"
-                    />
-                    <label htmlFor="countryR">Nacionalidad</label>
-                </FloatLabel>
-                <FloatLabel>
-                    <Calendar dateFormat="yy-mm-dd" id="startDateR" value={startDate} onChange={e => setStartDate(e.value!)} showIcon locale="es" maxDate={new Date()} required />
-                    <label htmlFor="startDateR">Fecha de contratación</label>
-                </FloatLabel>
-                <FloatLabel>
-                    <Dropdown
-                        id="companyR"
-                        value={companyId}
-                        options={companies}
-                        onChange={e => setCompanyId(e.value)}
-                        optionLabel="name"
-                        optionValue="id"
-                        placeholder="Selecciona una empresa"
-                        filter
-                        disabled={loading}
-                        required
-                        filterLocale="es"
-                    />
-                    <label htmlFor="companyR">Empresa</label>
-                </FloatLabel>
-                <FloatLabel>
-                    <InputText id="jobR" value={job} onChange={e => setJob(e.target.value)} required />
-                    <label htmlFor="jobR">Puesto</label>
-                </FloatLabel>
-                <FloatLabel>
-                    <InputText id="departmentR" value={department} onChange={e => setDepartment(e.target.value)} required />
-                    <label htmlFor="departmentR">Departamento</label>
-                </FloatLabel>
-                <FloatLabel>
-                    <InputText id="emailR" value={email} onChange={e => setEmail(e.target.value)} required />
-                    <label htmlFor="emailR">Correo electrónico</label>
-                </FloatLabel>
-                <FloatLabel>
-                    <Password id="passwordR" value={password} onChange={e => setPw(e.target.value)} required toggleMask feedback={false} />
-                    <label htmlFor="passwordR">Contraseña</label>
-                </FloatLabel>
-                <FloatLabel>
-                    <Password id="confirmR" value={rPw} onChange={e => setRPw(e.target.value)} required toggleMask feedback={false} />
-                    <label htmlFor="confirmR">Repetir contraseña</label>
-                </FloatLabel>
-                {(password.length != 0 && rPw.length != 0 && password !== rPw) && <Message severity="warn" text="Las contraseñas no coinciden" />}
-                {(password.length != 0 && password.length < 5) && <Message severity="warn" text="La contraseña es demasiado breve" />}
-                <Button type="submit" label="Crear cuenta y registrarse" className="p-mt-2" icon="pi pi-user-plus" />
-            </form>
+        <div className="flex justify-center px-4">
+            <div className="w-full max-w-4xl m-2">
+                <Toast ref={toast} />
+                <h2 className="text-2xl font-semibold text-center mb-6">Crear cuenta</h2>
+                <form onSubmit={onSubmit} className="grid grid-cols-3 gap-4">
+                    <FloatLabel className="min-w-[150px]">
+                        <InputText id="nameR" value={name} onChange={e => setname(e.target.value)} required />
+                        <label htmlFor="nameR">Nombre</label>
+                    </FloatLabel>
+                    <FloatLabel className="min-w-[150px]">
+                        <InputText id="surnameR" value={surname} onChange={e => setSurname(e.target.value)} />
+                        <label htmlFor="surnameR">Apellidos</label>
+                    </FloatLabel>
+                    <FloatLabel className="min-w-[150px]">
+                        <InputText id="nifR" value={nif} onChange={e => setNif(e.target.value)} required />
+                        <label htmlFor="nifR">NIF</label>
+                    </FloatLabel>
+                    <FloatLabel className="min-w-[150px]">
+                        <Dropdown
+                            id="countryR"
+                            value={country}
+                            options={COUNTRIES}
+                            onChange={e => setCountry(e.value)}
+                            optionLabel="label"
+                            optionValue="value"
+                            placeholder="Selecciona un país"
+                            filter
+                            required
+                            filterLocale="es"
+                        />
+                        <label htmlFor="countryR">Nacionalidad</label>
+                    </FloatLabel>
+                    <FloatLabel className="min-w-[150px]">
+                        <Calendar dateFormat="yy-mm-dd" id="startDateR" value={startDate} onChange={e => setStartDate(e.value!)} showIcon locale="es" maxDate={new Date()} required />
+                        <label htmlFor="startDateR">Fecha de contratación</label>
+                    </FloatLabel>
+                    <FloatLabel className="min-w-[150px]">
+                        <Dropdown
+                            id="companyR"
+                            value={companyId}
+                            options={companies}
+                            onChange={e => setCompanyId(e.value)}
+                            optionLabel="name"
+                            optionValue="id"
+                            placeholder="Selecciona una empresa"
+                            filter
+                            disabled={loading}
+                            required
+                            filterLocale="es"
+                        />
+                        <label htmlFor="companyR">Empresa</label>
+                    </FloatLabel>
+                    <FloatLabel className="min-w-[150px]">
+                        <InputText id="jobR" value={job} onChange={e => setJob(e.target.value)} required />
+                        <label htmlFor="jobR">Puesto</label>
+                    </FloatLabel>
+                    <FloatLabel className="min-w-[150px]">
+                        <InputText id="departmentR" value={department} onChange={e => setDepartment(e.target.value)} required />
+                        <label htmlFor="departmentR">Departamento</label>
+                    </FloatLabel>
+                    <FloatLabel className="min-w-[150px]">
+                        <InputText type="email" id="emailR" value={email} onChange={e => setEmail(e.target.value)} required />
+                        <label htmlFor="emailR">Correo electrónico</label>
+                    </FloatLabel>
+                    <FloatLabel className="min-w-[150px]">
+                        <Password id="passwordR" value={password} onChange={e => setPw(e.target.value)} required toggleMask feedback={false} />
+                        <label htmlFor="passwordR">Contraseña</label>
+                    </FloatLabel>
+                    <FloatLabel className="min-w-[150px]">
+                        <Password id="confirmR" value={rPw} onChange={e => setRPw(e.target.value)} required toggleMask feedback={false} />
+                        <label htmlFor="confirmR">Repetir contraseña</label>
+                    </FloatLabel>
+                    <div />
+                    {(password.length != 0 && rPw.length != 0 && password !== rPw) && <Message className="col-span-2" severity="warn" text="Las contraseñas no coinciden" />}
+                    {(password.length != 0 && password.length < 5) && <Message className="col-span-2" severity="warn" text="La contraseña es demasiado breve" />}
+                    <div />
+                    <div className="col-start-3">
+                        <Button type="submit" label="Crear cuenta y registrarse" icon="pi pi-user-plus" />
+                    </div>
+                </form>
+            </div>
         </div>
     );
 }

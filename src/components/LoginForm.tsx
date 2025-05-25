@@ -30,19 +30,19 @@ export const LoginForm: React.FC = () => {
     };
 
     return (
-        <div className="login-container">
+        <div className="flex flex-1 h-full items-center justify-center overflow-hidden">
             <Toast ref={toast} />
-            <form onSubmit={onSubmit} className="login-form">
-                <h2>Iniciar sesión</h2>
-                <FloatLabel>
-                    <InputText id="email" value={email} onChange={e => setEmail(e.target.value)} required />
+            <form onSubmit={onSubmit} className="w-full max-w-md px-4 py-6 rounded-lg">
+                <h2 className="text-2xl font-semibold text-center mb-6">Iniciar sesión</h2>
+                <FloatLabel className="mb-5 w-69 mx-auto">
+                    <InputText type="email" className="w-full" id="email" value={email} onChange={e => setEmail(e.target.value)} required />
                     <label htmlFor="email">Correo electrónico</label>
                 </FloatLabel>
-                <FloatLabel>
-                    <Password id="password" value={password} onChange={e => setPassword(e.target.value)} toggleMask feedback={false} required />
+                <FloatLabel className="mb-5 w-69 mx-auto">
+                    <Password className="w-full" id="password" value={password} onChange={e => setPassword(e.target.value)} toggleMask feedback={false} required style={{ width: '100%' }} />
                     <label htmlFor="password">Contraseña</label>
                 </FloatLabel>
-                <Button type="submit" label="Iniciar sesión" className="p-mt-2" icon="pi pi-sign-in" />
+                <Button type="submit" label="Iniciar sesión" className="w-100 mt-4" icon="pi pi-sign-in" />
             </form>
         </div>
     );

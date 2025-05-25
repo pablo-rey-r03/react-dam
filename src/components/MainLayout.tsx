@@ -16,7 +16,8 @@ import { Image } from "primereact/image";
 
 export const MainLayout: React.FC = () => {
 
-    const jwt: JWTDecoded = jwtDecode(localStorage.getItem("token")!);
+    const [jwt, setJwt] = useState<string | null>(localStorage.getItem("token"));
+    const [jwtDecoded, setDecoded] = useState<JWTDecoded | null>(jwt ? jwtDecode<JWTDecoded>(jwt) : null);
 
     const [employee, setEmployee] = useState<Employee>();
 
@@ -57,16 +58,25 @@ export const MainLayout: React.FC = () => {
     );
 
     useEffect(() => {
-        getEmployeeById(jwt.employee_id)
-            .then(data => setEmployee(data))
-            .catch((err: ErrorMessage) => {
-                toast.current?.show({
-                    severity: "error",
-                    summary: "Error al obtener el empleado en sesión",
-                    detail: err.detail,
-                    life: 3000
+        setJwt(localStorage.getItem("token") ?? null);
+        console.log(jwt)
+        setDecoded(jwt ? jwtDecode<JWTDecoded>(jwt) : null)
+        if (jwtDecoded) {
+            getEmployeeById(jwtDecoded.employee_id)
+                .then(data => setEmployee(data))
+                .catch((err: ErrorMessage) => {
+                    toast.current?.show({
+                        severity: "error",
+                        summary: "Error al obtener el empleado en sesión",
+                        detail: err.detail,
+                        life: 3000
+                    });
                 });
-            });
+        } else {
+            console.log(jwtDecoded)
+            navigate("/auth");
+        }
+
     }, []);
 
     return (

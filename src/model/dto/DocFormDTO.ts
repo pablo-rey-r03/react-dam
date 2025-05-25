@@ -7,8 +7,8 @@ export default interface DocFormDTO {
     subcontractId: number;
     name: string;
     date: LocalDate;
-    expirationDate?: LocalDate;
-    validationDate?: LocalDate;
-    employeeId?: number;
-    additionalInfo?: string;
+    expirationDate?: LocalDate | null;
+    validationDate?: LocalDate | null;
+    employeeId?: number | null;
+    additionalInfo?: string | null;
 }

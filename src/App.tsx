@@ -3,6 +3,7 @@ import { AuthTab } from './components/AuthTab';
 import { PrivateRoute } from './security/PrivateRoute';
 import { ErrorPage } from './security/ErrorPage';
 import { MainLayout } from './components/MainLayout';
+import Utils from './utils/Utils';
 
 function App() {
     const jwt: string | null = localStorage.getItem("token");
@@ -10,7 +11,7 @@ function App() {
         <Routes>
             <Route path='/'
                 element={
-                    jwt ? <Navigate to={"/home/dashboard"} replace /> : <Navigate to={"/auth"} replace />
+                    Utils.TokenIsValid(jwt) ? <Navigate to={"/home/dashboard"} replace /> : <Navigate to={"/auth"} replace />
                 }
             />
 
@@ -26,5 +27,6 @@ function App() {
         </Routes>
     )
 }
+
 
 export default App

@@ -12,6 +12,6 @@ export const HomeRoutes: React.FC = () => (
         <Route path="formDoc/:id" element={<DocuForm />} />
         {/* <Route path="reports" element={<Reports />} />
         <Route path="profile" element={<Profile />} /> */}
-        <Route path="*" element={<Home />} /> {/* default */}
+        <Route path="*" element={<Home />} />
     </Routes>
 )

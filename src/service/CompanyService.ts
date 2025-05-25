@@ -1,6 +1,8 @@
 import { API_URL } from "../config";
 import type Company from "../model/Company";
+import type SubcontractingRelationshipDTO from "../model/dto/SubcontractingRelationshipDTO";
 import type ErrorMessage from "../model/msg/ErrorMessage";
+import type ResponseEntity from "../model/msg/ResponseEntity";
 import type SubcontractingRelationship from "../model/SubcontractingRelationship";
 
 const COMPANY_API = API_URL + "/company";
@@ -54,4 +56,22 @@ export const getSubcontractsRelationshipBySubcontractId = async (id: number): Pr
         const error: ErrorMessage = await res.json();
         throw error;
     }
+}
+
+export const updateSubcontractRelationship = async (contId: number, subId: number, dto: SubcontractingRelationshipDTO) => {
+    const res = await fetch(`${COMPANY_API}/${contId}/hires/${subId}`, {
+        method: "PUT",
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token"),
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dto)
+    });
+
+    if (!res.ok) {
+        const error: ErrorMessage = await res.json();
+        throw error;
+    }
+
+    return (await res.json()) as ResponseEntity<SubcontractingRelationship>;
 }

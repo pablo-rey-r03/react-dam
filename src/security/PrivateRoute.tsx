@@ -1,6 +1,7 @@
 import type React from "react";
 import type { JSX } from "react";
 import { Navigate } from "react-router-dom";
+import Utils from "../utils/Utils";
 
 interface Props {
     children: JSX.Element;
@@ -9,7 +10,7 @@ interface Props {
 export const PrivateRoute: React.FC<Props> = ({ children }) => {
     const jwt = localStorage.getItem("token");
 
-    if (!jwt) {
+    if (!Utils.TokenIsValid(jwt)) {
         return <Navigate to={"/auth"} replace />
     }
 

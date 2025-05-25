@@ -1,11 +1,12 @@
 module.exports = {
-    purge: [],
     darkMode: false, // or 'media' or 'class'
     theme: {
         extend: {},
     },
     variants: {
-        extend: {},
+        extend: {
+            opacity: ['group-hover'],
+        },
     },
     plugins: [
         require('@tailwindcss/forms'),
@@ -16,6 +17,9 @@ module.exports = {
         "./pages/**/*.{js,ts,jsx,tsx,mdx}",
         "./components/**/*.{js,ts,jsx,tsx,mdx}",
         "./node_modules/primereact/**/*.{js,ts,jsx,tsx}",
-        "./src/**/*.{js,ts,jsx,tsx,mdx}",
-    ]
+        "./src/**/*.{js,ts,jsx,tsx,mdx,html}",
+    ],
+    safelist: [
+        'group-hover:opacity-100'
+    ],
 }
