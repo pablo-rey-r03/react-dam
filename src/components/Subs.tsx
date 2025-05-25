@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import type Company from "../model/Company";
 import type SubcontractingRelationship from "../model/SubcontractingRelationship";
 import { Toast } from "primereact/toast";
-import { useNavigate } from "react-router-dom";
 import { getEmployeeById } from "../service/EmployeeService";
 import { getSubcontractsRelationshipByContractorId, updateSubcontractRelationship } from "../service/CompanyService";
 import type ErrorMessage from "../model/msg/ErrorMessage";
@@ -16,7 +15,6 @@ import { Dialog } from "primereact/dialog";
 import { Calendar } from "primereact/calendar";
 import Utils from "../utils/Utils";
 import { Button } from "primereact/button";
-import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { LocalDate } from "@js-joda/core";
 
@@ -36,7 +34,6 @@ export const Subs: React.FC = () => {
     const [dirty, setDirty] = useState<{ [key: string]: boolean }>({});
 
     const toast = useRef<Toast>(null);
-    const navigate = useNavigate();
 
     useEffect(() => {
         getEmployeeById(employeeId)
