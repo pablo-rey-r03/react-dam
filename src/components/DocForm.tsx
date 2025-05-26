@@ -134,10 +134,11 @@ export const DocuForm: React.FC = () => {
                     additionalInfo
                 })
                     .then((res: ResponseEntity<Doc>) => {
-                        return addFile(res.entity.id, file);
+                        if (fileHasChanged) return addFile(res.entity.id, file);
+                        navigate("/home/dashboard");
                     })
                     .then(() => {
-                        navigate(-1);
+                        navigate("/home/dashboard");
                     })
                     .catch((e: ErrorMessage) => {
                         toast.current?.show({

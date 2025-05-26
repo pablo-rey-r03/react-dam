@@ -12,7 +12,6 @@ import { Menu } from "primereact/menu";
 import { Button } from "primereact/button";
 import { Menubar } from "primereact/menubar";
 import { HomeRoutes } from "../routing/HomeRoutes";
-import { Image } from "primereact/image";
 
 export const MainLayout: React.FC = () => {
 
@@ -59,7 +58,6 @@ export const MainLayout: React.FC = () => {
 
     useEffect(() => {
         setJwt(localStorage.getItem("token") ?? null);
-        console.log(jwt)
         setDecoded(jwt ? jwtDecode<JWTDecoded>(jwt) : null)
         if (jwtDecoded) {
             getEmployeeById(jwtDecoded.employee_id)
@@ -83,13 +81,6 @@ export const MainLayout: React.FC = () => {
         <div className="flex flex-col h-screen relative">
             <div className="relative">
                 <Menubar model={items} start={<div></div>} end={end} className="shadow-md m-3" />
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-                    <Image src="/Numby-removebg-preview.png"
-                        alt="logo"
-                        width="125"
-                        imageStyle={{ objectFit: "contain" }} />
-                </div>
-
             </div>
 
             <main className="flex-1 overflow-auto p-4 bg-gray-50">

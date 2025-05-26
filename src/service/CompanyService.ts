@@ -1,5 +1,6 @@
 import { API_URL } from "../config";
 import type Company from "../model/Company";
+import type CompanyDTO from "../model/dto/CompanyDTO";
 import type SubcontractingRelationshipDTO from "../model/dto/SubcontractingRelationshipDTO";
 import type ErrorMessage from "../model/msg/ErrorMessage";
 import type ResponseEntity from "../model/msg/ResponseEntity";
@@ -7,20 +8,22 @@ import type SubcontractingRelationship from "../model/SubcontractingRelationship
 
 const COMPANY_API = API_URL + "/company";
 
-export const getAllCompanies = async (): Promise<Company[]> => {
+export const getAllCompanies = async (): Promise<Company[] | undefined> => {
     const res = await fetch(`${COMPANY_API}`, {
         method: "GET"
     });
 
-    if (!res.ok) {
+    if (res.status == 204) {
+        return;
+    } else if (res.status == 200) {
+        return (await res.json()) as Company[];
+    } else {
         const error: ErrorMessage = await res.json();
         throw error;
     }
-
-    return (await res.json()) as Company[];
 }
 
-export const getSubcontractsRelationshipByContractorId = async (id: number): Promise<SubcontractingRelationship[]> => {
+export const getSubcontractsRelationshipByContractorId = async (id: number): Promise<SubcontractingRelationship[] | undefined> => {
     const res = await fetch(`${COMPANY_API}/${id}/hires`, {
         method: "GET",
         headers: {
@@ -29,8 +32,7 @@ export const getSubcontractsRelationshipByContractorId = async (id: number): Pro
     });
 
     if (res.status == 204) {
-        const error: ErrorMessage = { status: 204, error: "No hay relaciones", detail: "No hay subcontratas para la empresa dada", stack: "" };
-        throw error;
+        return;
     } else if (res.status == 200) {
         return (await res.json()) as SubcontractingRelationship[];
     } else {
@@ -74,4 +76,61 @@ export const updateSubcontractRelationship = async (contId: number, subId: numbe
     }
 
     return (await res.json()) as ResponseEntity<SubcontractingRelationship>;
+}
+
+export const deleteSubcontractRelationship = async (contId: number, subId: number) => {
+    const res = await fetch(`${COMPANY_API}/${contId}/fires/${subId}`, {
+        method: "DELETE",
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token"),
+            "Content-Type": "application/json",
+        }
+    });
+
+    if (res.status === 204) {
+        return;
+    }
+
+    if (res.ok) {
+        return;
+    }
+
+    const error: ErrorMessage = await res.json();
+    throw error;
+}
+
+export const createSubcontractRelationship = async (contId: number, subId: number, dto: SubcontractingRelationshipDTO): Promise<ResponseEntity<SubcontractingRelationship>> => {
+    const res = await fetch(`${COMPANY_API}/${contId}/hires/${subId}`, {
+        method: "POST",
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token"),
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dto)
+    });
+
+    if (!res.ok) {
+        const error: ErrorMessage = await res.json();
+        throw error;
+    }
+
+    return (await res.json()) as ResponseEntity<SubcontractingRelationship>;
+}
+
+export const createCompany = async (dto: CompanyDTO): Promise<ResponseEntity<Company>> => {
+    const res = await fetch(`${COMPANY_API}`, {
+        method: "POST",
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token"),
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dto)
+    });
+
+    if (!res.ok) {
+        const error: ErrorMessage = await res.json();
+        throw error;
+    }
+
+    return (await res.json()) as ResponseEntity<Company>;
 }

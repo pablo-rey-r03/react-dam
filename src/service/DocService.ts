@@ -11,7 +11,7 @@ export const getDocsByEmpId = async (id: number): Promise<Doc[]> => {
     const res = await fetch(`${DOC_API}/emp/${id}`, {
         method: "GET",
         headers: {
-            authorization: "Bearer " + localStorage.getItem("token")
+            "Authorization": "Bearer " + localStorage.getItem("token")
         }
     });
 
@@ -50,7 +50,7 @@ export const newDoc = async (data: DocFormDTO): Promise<ResponseEntity<Doc>> => 
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            authorization: "Bearer " + localStorage.getItem("token")
+            "Authorization": "Bearer " + localStorage.getItem("token")
         },
         body: JSON.stringify(data)
     });
