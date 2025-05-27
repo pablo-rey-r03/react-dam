@@ -26,6 +26,24 @@ export const getDocsByEmpId = async (id: number): Promise<Doc[]> => {
     }
 }
 
+export const getDocsBySubId = async (id: number): Promise<Doc[] | undefined> => {
+    const res = await fetch(`${DOC_API}/sub/${id}`, {
+        method: "GET",
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        }
+    });
+
+    if (res.status == 204) {
+        return;
+    } else if (res.status == 200) {
+        return (await res.json()) as Doc[];
+    } else {
+        const error: ErrorMessage = await res.json();
+        throw error;
+    }
+}
+
 export const getDocById = async (id: number): Promise<Doc> => {
     const res = await fetch(`${DOC_API}/${id}`, {
         method: "GET",

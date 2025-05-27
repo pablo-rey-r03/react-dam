@@ -29,7 +29,7 @@ export const MainLayout: React.FC = () => {
     const items = [
         { label: "Inicio", icon: "pi pi-home", command: () => navigate("/home/dashboard") },
         { label: 'Subcontratas', icon: 'pi pi-fw pi-briefcase', command: () => navigate('/home/companies') },
-        { label: 'Proyectos', icon: 'pi pi-fw pi-briefcase', command: () => navigate('/home/projects') },
+        { label: 'Documentos', icon: 'pi pi-fw pi-file-check', command: () => navigate('/home/docs') },
         { label: 'Informes', icon: 'pi pi-fw pi-chart-line', command: () => navigate('/home/reports') },
     ];
 
@@ -58,7 +58,7 @@ export const MainLayout: React.FC = () => {
 
     useEffect(() => {
         setJwt(localStorage.getItem("token") ?? null);
-        setDecoded(jwt ? jwtDecode<JWTDecoded>(jwt) : null)
+        setDecoded(jwt ? jwtDecode<JWTDecoded>(jwt) : null);
         if (jwtDecoded) {
             getEmployeeById(jwtDecoded.employee_id)
                 .then(data => setEmployee(data))
@@ -71,7 +71,6 @@ export const MainLayout: React.FC = () => {
                     });
                 });
         } else {
-            console.log(jwtDecoded)
             navigate("/auth");
         }
 

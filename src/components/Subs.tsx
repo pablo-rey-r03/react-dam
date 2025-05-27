@@ -220,7 +220,7 @@ export const Subs: React.FC = () => {
                 </div>
             </OverlayPanel>
 
-            <div className="flex overflow-x-auto overflow-y-visible group space-x-4 pb-2 group-hover:overflow-visible">
+            <div className="flex flex-wrap gap-4 pb-2">
                 {subs && (subs.length > 0) ? subs?.map((sub, idx) => {
                     const rel = subRels![idx];
                     return <div
@@ -282,7 +282,7 @@ export const Subs: React.FC = () => {
                                     }}
                                     dateFormat="yy-mm-dd"
                                     showIcon
-                                />                                {dirty.start_date && <Button icon="pi pi-check" className="ml-2 p-button-text" onClick={() => confirmField('startDate')} />}
+                                />                                {dirty.startDate && <Button icon="pi pi-check" className="ml-2 p-button-text" onClick={() => confirmField('startDate')} />}
                             </div>
                         </div>
                         <div>
@@ -300,13 +300,13 @@ export const Subs: React.FC = () => {
                                     showIcon
                                     placeholder="Sin fecha"
                                 />
-                                {dirty.end_date && <Button icon="pi pi-check" className="ml-2 p-button-text" onClick={() => confirmField('endDate')} />}
+                                {dirty.endDate && <Button icon="pi pi-check" className="ml-2 p-button-text" onClick={() => confirmField('endDate')} />}
                             </div>
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-100">Información adicional</label>
                             <div className="flex items-center">
-                                <InputTextarea value={form.additionalInfo} onChange={e => setForm({ ...form, additionalInfo: e.target.value })} onFocus={() => setDirty({ ...dirty, additional_info: true })} />
+                                <InputTextarea value={form.additionalInfo} onChange={e => setForm({ ...form, additionalInfo: e.target.value })} onFocus={() => setDirty({ ...dirty, additionalInfo: true })} />
                                 {dirty.additionalInfo && <Button icon="pi pi-check" className="ml-2 p-button-text" onClick={() => confirmField('additionalInfo')} />}
                             </div>
                         </div>

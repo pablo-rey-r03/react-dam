@@ -17,7 +17,7 @@ export const ErrorPage: React.FC = () => {
                     Lo sentimos, la página que buscas no existe o ha sido movida.
                 </p>
                 <Button
-                    label="Volver a Home"
+                    label="Volver a Inicio"
                     icon="pi pi-home"
                     onClick={goHome}
                     className="p-button-rounded p-button-outlined"
