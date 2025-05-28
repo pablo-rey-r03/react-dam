@@ -28,16 +28,16 @@ export const MainLayout: React.FC = () => {
 
     const items = [
         { label: "Inicio", icon: "pi pi-home", command: () => navigate("/home/dashboard") },
-        { label: 'Subcontratas', icon: 'pi pi-fw pi-briefcase', command: () => navigate('/home/companies') },
-        { label: 'Documentos', icon: 'pi pi-fw pi-file-check', command: () => navigate('/home/docs') },
-        { label: 'Informes', icon: 'pi pi-fw pi-chart-line', command: () => navigate('/home/reports') },
+        { label: 'Informes', icon: 'pi pi-chart-line', command: () => navigate('/home/reports') },
+        { label: 'Subcontratas', icon: 'pi pi-briefcase', command: () => navigate('/home/companies') },
+        { label: 'Documentos', icon: 'pi pi-file-check', command: () => navigate('/home/docs') },
     ];
 
     const profileMenu = [
-        { label: 'Perfil', icon: 'pi pi-fw pi-user', command: () => navigate('/home/profile') },
+        { label: 'Perfil', icon: 'pi pi-user', command: () => navigate('/home/profile') },
         { separator: true },
         {
-            label: 'Cerrar sesión', icon: 'pi pi-fw pi-sign-out', command: () => {
+            label: 'Cerrar sesión', icon: 'pi pi-sign-out', command: () => {
                 auth.logout();
                 navigate('/auth', { replace: true });
             }
@@ -74,12 +74,46 @@ export const MainLayout: React.FC = () => {
             navigate("/auth");
         }
 
-    }, []);
+    }, [jwt]);
+
+    const start = (
+      <div className="flex-1 min-w-0">
+        <Menubar
+          model={items}
+          breakpoint="960px"
+          className="w-full"
+        />
+      </div>
+    );
+
+    const center = (
+      <div
+        className="
+          flex-0
+          w-64
+          text-center
+          truncate
+          overflow-hidden
+          whitespace-nowrap
+          px-4
+          font-semibold
+        "
+        title={employee?.company.name}
+      >
+        {employee?.company.name}
+      </div>
+    );
 
     return (
-        <div className="flex flex-col h-screen relative">
-            <div className="relative">
-                <Menubar model={items} start={<div></div>} end={end} className="shadow-md m-3" />
+        <div className="flex flex-col h-screen">
+          <Toast ref={toast}/>
+          <Menubar 
+          model={items}
+          end={end}
+          start={<div/>}
+          breakpoint/>
+            <div className="flex items-center shadow-md">
+                {start}{center}{end}
             </div>
 
             <main className="flex-1 overflow-auto p-4 bg-gray-50">

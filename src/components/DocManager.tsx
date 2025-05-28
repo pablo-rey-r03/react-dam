@@ -97,7 +97,7 @@ export const DocManager: React.FC = () => {
         <div className="space-y-4 p-6">
             <Toast ref={toast} />
             {!subRels || subRels.length === 0 ? (
-                <p>No subcontracts found for your company.</p>
+                <p>Tu empresa no tiene relaciones contractuales con otras</p>
             ) : (
                 subRels.map(rel => {
                     const subId = rel.subcontract.id;
