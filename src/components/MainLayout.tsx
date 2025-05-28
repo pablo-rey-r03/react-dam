@@ -33,7 +33,7 @@ export const MainLayout: React.FC = () => {
         { label: 'Documentos', icon: 'pi pi-file-check', command: () => navigate('/home/docs') },
     ];
 
-    const profileMenu = [
+    const profileItems = [
         { label: 'Perfil', icon: 'pi pi-user', command: () => navigate('/home/profile') },
         { separator: true },
         {
@@ -52,7 +52,7 @@ export const MainLayout: React.FC = () => {
                 onClick={(e) => menu.current?.toggle(e)}
                 className="p-button-text text-gray-700"
             />
-            <Menu model={profileMenu} popup ref={menu} />
+            <Menu model={profileItems} popup ref={menu} />
         </div>
     );
 
@@ -76,45 +76,45 @@ export const MainLayout: React.FC = () => {
 
     }, [jwt]);
 
-    const start = (
-      <div className="flex-1 min-w-0">
-        <Menubar
-          model={items}
-          breakpoint="960px"
-          className="w-full"
-        />
-      </div>
-    );
-
-    const center = (
-      <div
-        className="
-          flex-0
-          w-64
-          text-center
-          truncate
-          overflow-hidden
-          whitespace-nowrap
-          px-4
-          font-semibold
-        "
-        title={employee?.company.name}
-      >
-        {employee?.company.name}
-      </div>
-    );
-
     return (
         <div className="flex flex-col h-screen">
-          <Toast ref={toast}/>
-          <Menubar 
-          model={items}
-          end={end}
-          start={<div/>}
-          breakpoint/>
-            <div className="flex items-center shadow-md">
-                {start}{center}{end}
+            <Toast ref={toast} />
+            <div className="flex items-center shadow-md text-white px-2">
+                <div className="flex-1">
+                    <Menubar
+                        model={items}
+                        className="bg-transparent border-none p-0" />
+                </div>
+
+                <div
+                    className="
+                        flex-1
+                        text-center
+                        truncate
+                        overflow-hidden
+                        whitespace-nowrap
+                        font-semibold
+                        px-4
+                    "
+                    title={employee?.company.name}
+                >
+                    <Button
+                        className="p-button-text text-white"
+                        label={employee?.company.name}
+                        icon="pi pi-building" />
+                </div>
+
+                <div className="flex-0 flex items-center space-x-2">
+                    <Button
+                        label={employee?.name}
+                        icon="pi pi-user"
+                        className="p-button-text text-white"
+                        onClick={e => menu.current?.toggle(e)}
+                    />
+                    <Menu model={profileItems} popup ref={menu} />
+                </div>
             </div>
+
 
             <main className="flex-1 overflow-auto p-4 bg-gray-50">
                 <HomeRoutes />

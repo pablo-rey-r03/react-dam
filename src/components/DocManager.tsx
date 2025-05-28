@@ -8,9 +8,8 @@ import { jwtDecode } from "jwt-decode";
 import type JWTDecoded from "../model/JWTDecoded";
 import { getEmployeeById } from "../service/EmployeeService";
 import { getSubcontractsRelationshipByContractorId } from "../service/CompanyService";
-import { downloadFile, getDocsByEmpId, getDocsBySubId } from "../service/DocService";
+import { downloadFile, getDocsBySubId } from "../service/DocService";
 import { Button } from "primereact/button";
-import type Company from "../model/Company";
 import type ErrorMessage from "../model/msg/ErrorMessage";
 
 export const DocManager: React.FC = () => {
@@ -190,7 +189,6 @@ export const DocManager: React.FC = () => {
                                         </div>
                                     )}
 
-                                    {/* No docs case */}
                                     {docs.subDocs.length === 0 && Object.keys(empGroups).length === 0 && (
                                         <p className="text-gray-400">No hay documentos disponibles para esta subcontrata</p>
                                     )}
