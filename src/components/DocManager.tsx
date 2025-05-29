@@ -3,14 +3,20 @@ import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import type SubcontractingRelationship from "../model/SubcontractingRelationship";
 import type Doc from "../model/Doc";
-import type { ValidationState } from "../model/enum/ValidationState";
+import { ValidationStates, type ValidationState } from "../model/enum/ValidationState";
 import { jwtDecode } from "jwt-decode";
 import type JWTDecoded from "../model/JWTDecoded";
 import { getEmployeeById } from "../service/EmployeeService";
 import { getSubcontractsRelationshipByContractorId } from "../service/CompanyService";
-import { downloadFile, getDocsBySubId } from "../service/DocService";
+import { downloadFile, getDocsBySubId, updateDoc } from "../service/DocService";
 import { Button } from "primereact/button";
 import type ErrorMessage from "../model/msg/ErrorMessage";
+import Utils from "../utils/Utils";
+import { Dialog } from "primereact/dialog";
+import { Calendar } from "primereact/calendar";
+import { Dropdown } from "primereact/dropdown";
+import type DocFormDTO from "../model/dto/DocFormDTO";
+import type ResponseEntity from "../model/msg/ResponseEntity";
 
 export const DocManager: React.FC = () => {
 
@@ -19,12 +25,16 @@ export const DocManager: React.FC = () => {
     const [subRels, setSubRels] = useState<SubcontractingRelationship[] | undefined>([]);
     const [groupedDocs, setGroupedDocs] = useState<Record<number, { subDocs: Doc[]; empDocs: Doc[] }>>({});
     const [expandedSub, setExpandedSub] = useState<number | null>(null);
+    const [editingDoc, setEditingDoc] = useState<Doc | null>(null);
+    const [expirationDate, setExpirationDate] = useState<Date | null>(null);
+    const [validationState, setValidationState] = useState<ValidationState>('OK');
+
 
     const StateBorderClasses: Record<ValidationState, string> = {
         OK: "!border-green-600 !hover:border-green-400",
         VA: "!border-yellow-600 !hover:border-yellow-400",
         ER: "!border-red-600 !hover:border-red-400",
-        EX: "!border-amber-800 !hover:border-amber-600"
+        EX: "!border-gray-800 !hover:border-gray-600"
     };
 
     useEffect(() => {
@@ -41,7 +51,7 @@ export const DocManager: React.FC = () => {
                 if (err.status !== 204)
                     toast.current?.show({ severity: "error", summary: "Error", detail: err.detail, life: 3000 });
             });
-    }, []);
+    }, [editingDoc]);
 
     useEffect(() => {
         if (!companyId || !subRels || subRels.length === 0) return;
@@ -66,7 +76,7 @@ export const DocManager: React.FC = () => {
         };
 
         loadAll();
-    }, [companyId, subRels]);
+    }, [companyId, subRels, editingDoc]);
 
 
     const groupByEmployee = (docs: Doc[]) => {
@@ -91,6 +101,34 @@ export const DocManager: React.FC = () => {
                 });
             })
     }
+
+    const handleSave = async () => {
+        if (!editingDoc || companyId == null) return;
+        const dto: DocFormDTO = {
+            name: editingDoc.name,
+            contractorId: companyId,
+            subcontractId: editingDoc.subcontract.id,
+            validationState,
+            date: editingDoc.date,
+            expirationDate: expirationDate ? Utils.DateToLocalDate(expirationDate) : null,
+            validationDate: Utils.DateToLocalDate(new Date()),
+            employeeId: editingDoc.employee?.id ?? null,
+            additionalInfo: editingDoc.additional_info ?? null
+        };
+        updateDoc(editingDoc.id, dto)
+            .then((res: ResponseEntity<Doc>) => {
+                toast.current?.show({ severity: 'success', summary: 'Guardado', detail: 'Estado del documento actualizado', life: 3000 });
+            })
+            // Opcional: refrescar la lista de documentos
+            // re-fetch de getDocsBySubId para el subcontract correspondiente
+            .catch((err: ErrorMessage) => {
+                toast.current?.show({ severity: 'error', summary: 'Error', detail: err.detail, life: 3000 });
+
+            })
+            .finally(() => setEditingDoc(null))
+
+    };
+
 
     return (
         <div className="space-y-4 p-6">
@@ -127,8 +165,20 @@ export const DocManager: React.FC = () => {
                                                     .map(doc => (
                                                         <div
                                                             key={doc.id}
-                                                            onClick={() => { /* set selected if needed */ }}
-                                                            className={`w-75 bg-gray-800 rounded-2xl border-2 ${StateBorderClasses[doc.validation_state]} p-4 relative cursor-pointer`}
+                                                            onClick={() => {
+                                                                setEditingDoc(doc);
+                                                                setExpirationDate(doc.expiration_date ? Utils.LocalDateToDate(doc.expiration_date) : null);
+                                                                setValidationState(doc.validation_state);
+                                                            }}
+                                                            className={`bg-gray-800 rounded-2xl border-2 ${StateBorderClasses[doc.validation_state]} p-5 pr-6 pt-6 relative w-75 bg-gray-800 rounded-2xl border-2 ${StateBorderClasses[doc.validation_state]} p-4 relative transform-gpu
+                                                                transition-all
+                                                                duration-300
+                                                                ease-in-out
+                                                                hover:z-10        
+                                                                hover:scale-105
+                                                                hover:shadow-2xl
+                                                                shadow-lg
+                                                                cursor-pointer`}
                                                         >
                                                             <h5 className="text-white font-medium truncate">{doc.name}</h5>
                                                             <p className="text-gray-400 text-sm">{doc.date.toString()}</p>
@@ -163,8 +213,20 @@ export const DocManager: React.FC = () => {
                                                             {docs.map(doc => (
                                                                 <div
                                                                     key={doc.id}
-                                                                    className={`w-75 bg-gray-800 rounded-2xl border-2 ${StateBorderClasses[doc.validation_state]} p-4 relative cursor-pointer`}
-                                                                    onClick={() => { /* set selected if needed */ }}
+                                                                    className={`w-75 bg-gray-800 rounded-2xl border-2 ${StateBorderClasses[doc.validation_state]} p-5 pt-6 pr-6 relative transform-gpu
+                                                                        transition-all
+                                                                        duration-300
+                                                                        ease-in-out
+                                                                        hover:z-10        
+                                                                        hover:scale-105
+                                                                        hover:shadow-2xl
+                                                                        shadow-lg
+                                                                        cursor-pointer`}
+                                                                    onClick={() => {
+                                                                        setEditingDoc(doc);
+                                                                        setExpirationDate(doc.expiration_date ? Utils.LocalDateToDate(doc.expiration_date) : null);
+                                                                        setValidationState(doc.validation_state);
+                                                                    }}
                                                                 >
                                                                     <h5 className="text-white font-medium truncate">{doc.name}</h5>
                                                                     <p className="text-gray-400 text-sm">{doc.date.toString()}</p>
@@ -198,6 +260,40 @@ export const DocManager: React.FC = () => {
                     );
                 })
             )}
+            <Dialog
+                header={"Editar - " + editingDoc?.name}
+                visible={!!editingDoc}
+                style={{ width: '400px' }}
+                modal
+                onHide={() => setEditingDoc(null)}
+            >
+                <div className="p-fluid">
+                    <div className="p-field m-3">
+                        <label htmlFor="expiration">Fecha de expiración</label>
+                        <Calendar
+                            id="expiration"
+                            value={expirationDate}
+                            onChange={e => setExpirationDate(e.value as Date)}
+                            showIcon
+                        />
+                    </div>
+                    <div className="p-field m-3">
+                        <label htmlFor="state">Estado de validación</label>
+                        <Dropdown
+                            id="state"
+                            value={validationState}
+                            options={Object.entries(ValidationStates).map(([key, label]) => ({ label, value: key as ValidationState }))}
+                            onChange={e => setValidationState(e.value)}
+                            placeholder="Selecciona estado"
+                        />
+                    </div>
+                    <div className="p-dialog-footer">
+                        <Button label="Cancelar" icon="pi pi-times" onClick={() => setEditingDoc(null)} className="p-button-text" />
+                        <Button label="Guardar" icon="pi pi-check" onClick={handleSave} autoFocus />
+                    </div>
+                </div>
+            </Dialog>
+
         </div>
     );
 }

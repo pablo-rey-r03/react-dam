@@ -28,7 +28,7 @@ export const MainLayout: React.FC = () => {
 
     const items = [
         { label: "Inicio", icon: "pi pi-home", command: () => navigate("/home/dashboard") },
-        { label: 'Informes', icon: 'pi pi-chart-line', command: () => navigate('/home/reports') },
+        { label: 'Mi empresa', icon: 'pi pi-building', command: () => navigate('/home/reports') },
         { label: 'Subcontratas', icon: 'pi pi-briefcase', command: () => navigate('/home/companies') },
         { label: 'Documentos', icon: 'pi pi-file-check', command: () => navigate('/home/docs') },
     ];

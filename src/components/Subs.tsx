@@ -325,7 +325,7 @@ export const Subs: React.FC = () => {
                     <div className="flex justify-end space-x-2">
                         <Button
                             label="Crear relación"
-                            icon="pi pi-check"
+                            icon="pi pi-sitemap"
                             className="p-button-success"
                             onClick={() => {
                                 if (!relationForm.startDate) {
