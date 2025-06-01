@@ -16,6 +16,7 @@ import type ErrorMessage from "../model/msg/ErrorMessage";
 import { Button } from "primereact/button";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import Utils from "../utils/Utils";
 
 export const RegisterForm: React.FC = () => {
     const [email, setEmail] = useState<string>("");
@@ -111,9 +112,6 @@ export const RegisterForm: React.FC = () => {
             return;
         }
 
-        const jsDate: Date = startDate;
-        const iso = jsDate.toISOString().substring(0, 10);
-
         await authService.register({
             name,
             surname,
@@ -121,7 +119,7 @@ export const RegisterForm: React.FC = () => {
             password,
             active: true,
             nif,
-            start_date: LocalDate.parse(iso),
+            start_date: Utils.DateToLocalDate(startDate),
             country,
             department,
             job,

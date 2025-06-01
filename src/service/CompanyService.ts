@@ -134,3 +134,21 @@ export const createCompany = async (dto: CompanyDTO): Promise<ResponseEntity<Com
 
     return (await res.json()) as ResponseEntity<Company>;
 }
+
+export const updateCompany = async (id: number, dto: CompanyDTO): Promise<ResponseEntity<Company>> => {
+    const res = await fetch(`${COMPANY_API}/${id}`, {
+        method: "PUT",
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token"),
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dto)
+    });
+
+    if (!res.ok) {
+        const error: ErrorMessage = await res.json();
+        throw error;
+    }
+
+    return (await res.json()) as ResponseEntity<Company>;
+}

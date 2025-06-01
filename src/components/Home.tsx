@@ -6,7 +6,6 @@ import { Toast } from "primereact/toast";
 import type JWTDecoded from "../model/JWTDecoded";
 import type Employee from "../model/Employee";
 import type Company from "../model/Company";
-import { useNavigate } from "react-router-dom";
 import { addFile, deleteDocById, downloadFile, getDocsByEmpId, getFileBlob, newDoc, updateDoc } from "../service/DocService";
 import type Doc from "../model/Doc";
 import { Button } from "primereact/button";
@@ -21,6 +20,7 @@ import { Calendar } from "primereact/calendar";
 import { InputTextarea } from "primereact/inputtextarea";
 import { FileUpload } from "primereact/fileupload";
 import { Message } from "primereact/message";
+import { getSubcontractsRelationshipBySubcontractId } from "../service/CompanyService";
 
 export const Home: React.FC = (): ReactNode => {
     const employeeId = jwtDecode<JWTDecoded>(localStorage.getItem("token")!).employee_id;
@@ -33,10 +33,8 @@ export const Home: React.FC = (): ReactNode => {
 
     // Modales (detalle y formulario)
     const [selectedDoc, setSelDoc] = useState<Doc | null>(null);
-    const [showDetails, setShowDetails] = useState<boolean>(false);
     const [showForm, setShowForm] = useState<boolean>(false);
 
-    const navigate = useNavigate();
 
     // Estados del formulario
     const [contracts, setContracts] = useState<Company[]>([]);
@@ -49,12 +47,12 @@ export const Home: React.FC = (): ReactNode => {
     const [file, setFile] = useState<File | null>(null);
     const [fileHasChanged, setFileHasChanged] = useState<boolean>(false);
 
-    // Estilos del borde de la card según 
+    // Estilos del borde de la card según validación
     const StateBorderClasses: Record<ValidationState, string> = {
         OK: "!border-green-600 !hover:border-green-400",
         VA: "!border-yellow-600 !hover:border-yellow-400",
         ER: "!border-red-600 !hover:border-red-400",
-        EX: "!border-amber-800 !hover:border-amber-600"
+        EX: "!border-gray-800 !hover:border-gray-600"
     };
 
     useEffect(() => {
@@ -62,7 +60,11 @@ export const Home: React.FC = (): ReactNode => {
             .then(res => {
                 setEmployee(res);
                 setCompany(res.company);
-                return getDocsByEmpId(res.id);
+                return getSubcontractsRelationshipBySubcontractId(res.company.id);
+            })
+            .then(subRels => {
+                setContracts(subRels.map(r => r.contractor));
+                return getDocsByEmpId(employeeId);
             })
             .then(setDocs)
             .catch((err: ErrorMessage) => {
@@ -78,7 +80,6 @@ export const Home: React.FC = (): ReactNode => {
 
     const openForm = (doc?: Doc) => {
         if (doc) {
-            // Editar: precargar
             setSelDoc(doc);
             setName(doc.name);
             setContractId(doc.contractor.id);
@@ -86,12 +87,10 @@ export const Home: React.FC = (): ReactNode => {
             setExpDate(doc.expiration_date ? Utils.LocalDateToDate(doc.expiration_date) : null);
             setInfo(doc.additional_info ?? null);
             setValidationState(doc.validation_state);
-            // Carga archivo existente
             getFileBlob(doc.id)
                 .then(blob => setFile(new File([blob], doc.file_path ? doc.file_path.split(/[/\\]/).pop()! : "", { type: blob.type })))
                 .catch(() => setFile(null));
         } else {
-            // Nuevo: reset
             setSelDoc(null);
             setName("");
             setContractId(0);
@@ -112,7 +111,7 @@ export const Home: React.FC = (): ReactNode => {
             return;
         }
         const payload = {
-            validationState,
+            validationState: "VA" as ValidationState,
             contractorId: contractId,
             subcontractId: employee!.company.id,
             name,
@@ -151,10 +150,6 @@ export const Home: React.FC = (): ReactNode => {
             })
     }
 
-    const handleEdit = (docId: number) => {
-        navigate(`/home/formDoc/${docId}`)
-    }
-
     const deleteDoc = (docId: number) => {
         deleteDocById(docId)
             .then(() => {
@@ -176,17 +171,6 @@ export const Home: React.FC = (): ReactNode => {
             })
     }
 
-    const confirmDelete = (e: React.MouseEvent<HTMLElement>, docId: number) => {
-        confirmPopup({
-            target: e.currentTarget,
-            message: "¿Desea eliminar el documento?",
-            acceptLabel: "Eliminar",
-            rejectLabel: "Cancelar",
-            icon: "pi pi-exclamation-circle",
-            accept: () => deleteDoc(docId)
-        });
-    }
-
     return (
         <div className="p-6">
             <Toast ref={toast} />
@@ -201,51 +185,27 @@ export const Home: React.FC = (): ReactNode => {
             </h2>
 
             <div className="flex flex-wrap gap-4">
-                {docs?.map(doc => (
-                    <div key={doc.id} onClick={() => openForm(doc)} className={`w-[250px] bg-gray-800 rounded-2xl border-2 ${StateBorderClasses[doc.validation_state]} p-4 cursor-pointer`}>
+                {docs && docs.length != 0 ? docs.map(doc => (
+                    <div key={doc.id} onClick={() => openForm(doc)} className={`w-[250px] bg-gray-800 rounded-2xl border-2 ${StateBorderClasses[doc.validation_state]} p-4 transform-gpu
+                                                                transition-all
+                                                                duration-300
+                                                                ease-in-out
+                                                                hover:z-10        
+                                                                hover:scale-105
+                                                                hover:shadow-2xl m-5 ml-0 cursor-pointer`}>
                         <h3 className="text-white truncate">{doc.name}</h3>
                         <p className="text-gray-300 truncate">{doc.contractor.name}</p>
-                        <div className="absolute top-2 right-2 flex space-x-1">
-                            <Button icon="pi pi-download" size="small" onClick={e => { e.stopPropagation(); downloadFile(doc.id); }} />
-                            <Button icon="pi pi-trash" size="small" onClick={e => { e.stopPropagation(); confirmPopup({ target: e.currentTarget, message: "¿Eliminar?", accept: () => deleteDocById(doc.id).then(() => setDocs(ds => ds?.filter(d => d.id !== doc.id))) }); }} />
+                        <div className="top-2 right-2 flex space-x-1">
+                            <Button icon="pi pi-download" size="small" className="m-2 p-button-info" onClick={e => { e.stopPropagation(); handleDownload(doc.id) }} />
+                            <Button icon="pi pi-trash" size="small" className="m-2 p-button-danger" onClick={e => {
+                                e.stopPropagation(); confirmPopup({
+                                    target: e.currentTarget, message: "¿Eliminar documento?", accept: () => deleteDoc(doc.id), acceptLabel: "Sí", rejectLabel: "No"
+                                });
+                            }} />
                         </div>
                     </div>
-                ))}
+                )) : <div className="m-5 ml-0">No has subido documentos aún</div>}
             </div>
-
-            <Dialog
-                header="Detalles del documento"
-                visible={showDetails}
-                style={{ width: "400px" }}
-                onHide={() => setShowDetails(false)}>
-                {selectedDoc && (
-                    <div className="space-y-2 text-gray-700">
-                        <p className="whitespace-normal break-words"><strong>Nombre:</strong> {selectedDoc.name}</p>
-                        <p><strong>Contratista:</strong> {selectedDoc.contractor.name}</p>
-                        <p><strong>Estado:</strong> {ValidationStates[selectedDoc.validation_state]}</p>
-                        <p><strong>Fecha de subida:</strong> {selectedDoc.date.toString()}</p>
-                        {selectedDoc.expiration_date && (
-                            <p><strong>Expira:</strong> {selectedDoc.expiration_date.toString()}</p>
-                        )}
-                        {selectedDoc.validation_date && (
-                            <p><strong>Se validó:</strong> {selectedDoc.validation_date.toString()}</p>
-                        )}
-                        {selectedDoc.additional_info && (
-                            <p className="whitespace-normal break-words"><strong>Info adicional:</strong>
-                                <br />{selectedDoc.additional_info}
-                            </p>
-                        )}
-                        <Button
-                            label="Descargar archivo adjunto"
-                            icon="pi pi-download"
-                            className="p-button-sm p-button-info mt-2"
-                            onClick={() => {
-                                downloadFile(selectedDoc.id);
-                            }}
-                        />
-                    </div>
-                )}
-            </Dialog>
 
             <Dialog header={selectedDoc ? "Editar documento - " + selectedDoc.name : "Nuevo documento"} visible={showForm} style={{ width: '500px' }} onHide={() => setShowForm(false)}>
                 <form onSubmit={handleSubmit} className="space-y-8">
@@ -257,8 +217,12 @@ export const Home: React.FC = (): ReactNode => {
                         <Dropdown emptyMessage="Sin empresas contratistas" options={contracts} optionLabel="name" optionValue="id" value={contractId} onChange={e => setContractId(e.value)} required />
                         <label>Contratista</label>
                     </FloatLabel>
+                    {selectedDoc && <Message severity={selectedDoc?.validation_state == "OK" ? "success"
+                        : selectedDoc?.validation_state == "VA" ? "warn"
+                            : selectedDoc?.validation_state == "ER" ? "error"
+                                : "secondary"} text={ValidationStates[selectedDoc!.validation_state]} className="ml-5" />}
                     <FloatLabel className="m-5">
-                        <Calendar value={date} onChange={e => setDate(e.value!)} showIcon required />
+                        <Calendar maxDate={new Date()} value={date} onChange={e => setDate(e.value!)} dateFormat="yy-mm-dd" showIcon required />
                         <label>Fecha</label>
                     </FloatLabel>
                     <FloatLabel className="m-5">
@@ -270,10 +234,10 @@ export const Home: React.FC = (): ReactNode => {
                         onRemove={() => setFile(null)}
                     />
                     <Message severity={file ? "info" : "warn"}
-                        text={file ? file.name : "No hay archivo"} className="m-2"
+                        text={file ? file.name : "No hay archivo"} className="m-5"
                     />
+
                     <div className="flex justify-end space-x-2 space-y-2 m-2">
-                        <Button className="m-2" label="Cancelar" onClick={() => setShowForm(false)} />
                         <Button className="m-2" label="Guardar" type="submit" />
                     </div>
                 </form>

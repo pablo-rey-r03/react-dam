@@ -170,7 +170,7 @@ export const DocManager: React.FC = () => {
                                                                 setExpirationDate(doc.expiration_date ? Utils.LocalDateToDate(doc.expiration_date) : null);
                                                                 setValidationState(doc.validation_state);
                                                             }}
-                                                            className={`bg-gray-800 rounded-2xl border-2 ${StateBorderClasses[doc.validation_state]} p-5 pr-6 pt-6 relative w-75 bg-gray-800 rounded-2xl border-2 ${StateBorderClasses[doc.validation_state]} p-4 relative transform-gpu
+                                                            className={`p-5 pr-6 pt-6 relative w-75 bg-gray-800 rounded-2xl border-2 ${StateBorderClasses[doc.validation_state]} relative transform-gpu
                                                                 transition-all
                                                                 duration-300
                                                                 ease-in-out
@@ -260,40 +260,43 @@ export const DocManager: React.FC = () => {
                     );
                 })
             )}
-            <Dialog
-                header={"Editar - " + editingDoc?.name}
-                visible={!!editingDoc}
-                style={{ width: '400px' }}
-                modal
-                onHide={() => setEditingDoc(null)}
-            >
-                <div className="p-fluid">
-                    <div className="p-field m-3">
-                        <label htmlFor="expiration">Fecha de expiración</label>
-                        <Calendar
-                            id="expiration"
-                            value={expirationDate}
-                            onChange={e => setExpirationDate(e.value as Date)}
-                            showIcon
-                        />
+            {editingDoc &&
+                <Dialog
+                    header={"Editar - " + editingDoc?.name}
+                    visible={!!editingDoc}
+                    style={{ width: '400px' }}
+                    modal
+                    onHide={() => setEditingDoc(null)}
+                >
+                    <div className="p-fluid">
+                        <div className="p-field m-3">
+                            <label htmlFor="expiration">Fecha de expiración</label>
+                            <Calendar
+                                id="expiration"
+                                value={expirationDate}
+                                onChange={e => setExpirationDate(e.value as Date)}
+                                showIcon
+                                dateFormat="yy-mm-dd"
+                                minDate={Utils.LocalDateToDate(editingDoc!.date)}
+                            />
+                        </div>
+                        <div className="p-field m-3">
+                            <label htmlFor="state">Estado de validación</label>
+                            <Dropdown
+                                id="state"
+                                value={validationState}
+                                options={Object.entries(ValidationStates).map(([key, label]) => ({ label, value: key as ValidationState }))}
+                                onChange={e => setValidationState(e.value)}
+                                placeholder="Selecciona estado"
+                            />
+                        </div>
+                        <div className="p-dialog-footer">
+                            <Button label="Cancelar" icon="pi pi-times" onClick={() => setEditingDoc(null)} className="p-button-text" />
+                            <Button label="Guardar" icon="pi pi-check" onClick={handleSave} autoFocus />
+                        </div>
                     </div>
-                    <div className="p-field m-3">
-                        <label htmlFor="state">Estado de validación</label>
-                        <Dropdown
-                            id="state"
-                            value={validationState}
-                            options={Object.entries(ValidationStates).map(([key, label]) => ({ label, value: key as ValidationState }))}
-                            onChange={e => setValidationState(e.value)}
-                            placeholder="Selecciona estado"
-                        />
-                    </div>
-                    <div className="p-dialog-footer">
-                        <Button label="Cancelar" icon="pi pi-times" onClick={() => setEditingDoc(null)} className="p-button-text" />
-                        <Button label="Guardar" icon="pi pi-check" onClick={handleSave} autoFocus />
-                    </div>
-                </div>
-            </Dialog>
-
+                </Dialog>
+            }
         </div>
     );
 }
