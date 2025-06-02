@@ -22,7 +22,6 @@ import { Dialog } from "primereact/dialog";
 import Utils from "../utils/Utils";
 import { Calendar } from "primereact/calendar";
 import { InputTextarea } from "primereact/inputtextarea";
-import { Checkbox } from "primereact/checkbox";
 
 export const MainLayout: React.FC = () => {
 
