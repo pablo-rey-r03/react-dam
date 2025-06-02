@@ -13,6 +13,6 @@ export const HomeRoutes: React.FC = () => (
         <Route path="docs" element={<DocManager />} />
         <Route path="my_comp" element={<CompanyDocs />} />
         <Route path="" element={<Home />} />
-        <Route path="*" element={<Home />} />
+        <Route path="*" element={<ErrorPage />} />
     </Routes>
 )
