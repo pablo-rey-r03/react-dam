@@ -11,6 +11,5 @@ export const HomeRoutes: React.FC = () => (
         <Route path="companies" element={<Subs />} />
         <Route path="docs" element={<DocManager />} />
         <Route path="my_comp" element={<CompanyDocs />} />
-        <Route path="*" element={<Home />} />
     </Routes>
 )
