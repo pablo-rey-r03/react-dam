@@ -131,7 +131,9 @@ export const CompanyDocs: React.FC = (): ReactNode => {
             .then(() => {
                 return getDocsBySubId(employee!.company.id);
             })
-            .then(setDocs)
+            .then(docsSub => {
+                setDocs(docsSub?.filter(doc => doc.employee == null))
+            })
             .then(() => {
                 setShowForm(false);
                 toast.current?.show({ severity: "success", summary: "Guardado", detail: "Documento guardado correctamente", life: 3000 });
