@@ -12,7 +12,9 @@ export const HomeRoutes: React.FC = () => (
         <Route path="companies" element={<Subs />} />
         <Route path="docs" element={<DocManager />} />
         <Route path="my_comp" element={<CompanyDocs />} />
+        {/* La ruta origen también lleva al Home */}
         <Route path="" element={<Home />} />
+        {/* Cualquiero otra ruta se considera errónea */}
         <Route path="*" element={<ErrorPage />} />
     </Routes>
 )

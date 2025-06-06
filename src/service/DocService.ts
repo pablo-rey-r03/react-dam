@@ -131,6 +131,7 @@ export const downloadFile = async (docId: number): Promise<void> => {
         throw error;
     }
 
+    // Obtenemos la respuesta como blob
     const blob = await res.blob();
 
     const contentDisp = res.headers.get("Content-Disposition") || "";
@@ -141,6 +142,7 @@ export const downloadFile = async (docId: number): Promise<void> => {
     }
     const filename = match[1];
 
+    // Causamos la descarga del archivo (generando un enlace invisible)
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;

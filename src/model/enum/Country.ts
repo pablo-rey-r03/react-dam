@@ -196,8 +196,8 @@ export const COUNTRY_BY_CODE = {
     PS: 'Palestina',
 } as const;
 
-export type CountryCode = keyof typeof COUNTRY_BY_CODE;
-export type CountryName = typeof COUNTRY_BY_CODE[CountryCode];
+export type CountryCode = keyof typeof COUNTRY_BY_CODE; // Códigos
+export type CountryName = typeof COUNTRY_BY_CODE[CountryCode]; // Nombre completo
 
 type Entry = [CountryCode, CountryName];
 
@@ -208,10 +208,20 @@ export const CODE_BY_COUNTRY = (Object
         return acc;
     }, {} as Record<CountryName, CountryCode>);
 
+/**
+ * Obtiene el nombre del país según el código
+ * @param code código
+ * @returns nombre
+ */
 export function getCountryName(code: CountryCode): CountryName {
     return COUNTRY_BY_CODE[code];
 }
 
+/**
+ * Obtiene el código del país según el nombre
+ * @param name Nombre
+ * @returns código
+ */
 export function getCountryCode(name: CountryName): CountryCode {
     return CODE_BY_COUNTRY[name];
 }
