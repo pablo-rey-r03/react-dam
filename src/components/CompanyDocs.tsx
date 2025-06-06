@@ -190,26 +190,27 @@ export const CompanyDocs: React.FC = (): ReactNode => {
             </h2>
 
             <div className="flex flex-wrap gap-4">
-                {docs?.map(doc => (
-                    <div key={doc.id} onClick={() => openForm(doc)} className={`w-[250px] bg-gray-800 rounded-2xl border-2 ${StateBorderClasses[doc.validation_state]} p-4 cursor-pointer transform-gpu
+                {(docs && docs.length == 0) || docs == undefined ? <div className="m-5 ml-0">No hay documentos subidos por tu empresa</div>
+                    : docs!.map(doc => (
+                        <div key={doc.id} onClick={() => openForm(doc)} className={`w-[250px] bg-gray-800 rounded-2xl border-2 ${StateBorderClasses[doc.validation_state]} p-4 cursor-pointer transform-gpu
                                                                 transition-all
                                                                 duration-300
                                                                 ease-in-out
                                                                 hover:z-10        
                                                                 hover:scale-105
                                                                 hover:shadow-2xl m-5 ml-0`}>
-                        <h3 className="text-white truncate">{doc.name}</h3>
-                        <p className="text-gray-300 truncate">{doc.contractor.name}</p>
-                        <div className="top-2 right-2 flex space-x-1">
-                            <Button icon="pi pi-download" size="small" className="m-2 p-button-info" onClick={e => { e.stopPropagation(); handleDownload(doc.id) }} />
-                            <Button icon="pi pi-trash" size="small" className="m-2 p-button-danger" onClick={e => {
-                                e.stopPropagation(); confirmPopup({
-                                    target: e.currentTarget, message: "¿Eliminar documento?", accept: () => deleteDoc(doc.id), acceptLabel: "Sí", rejectLabel: "No"
-                                });
-                            }} />
+                            <h3 className="text-white truncate">{doc.name}</h3>
+                            <p className="text-gray-300 truncate">{doc.contractor.name}</p>
+                            <div className="top-2 right-2 flex space-x-1">
+                                <Button icon="pi pi-download" size="small" className="m-2 p-button-info" onClick={e => { e.stopPropagation(); handleDownload(doc.id) }} />
+                                <Button icon="pi pi-trash" size="small" className="m-2 p-button-danger" onClick={e => {
+                                    e.stopPropagation(); confirmPopup({
+                                        target: e.currentTarget, message: "¿Eliminar documento?", accept: () => deleteDoc(doc.id), acceptLabel: "Sí", rejectLabel: "No"
+                                    });
+                                }} />
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    ))}
             </div>
 
             <Dialog header={selectedDoc ? "Editar documento - " + selectedDoc.name : "Nuevo documento"} visible={showForm} style={{ width: '500px' }} onHide={() => setShowForm(false)}>
