@@ -129,7 +129,7 @@ export const CompanyDocs: React.FC = (): ReactNode => {
             : newDoc(payload).then(res => addFile(res.entity.id, file));
         op
             .then(() => {
-                return getDocsByEmpId(employeeId);
+                return getDocsBySubId(employee!.company.id);
             })
             .then(setDocs)
             .then(() => {
