@@ -85,7 +85,7 @@ export const Subs: React.FC = () => {
             getAllCompanies()
                 .then(list => setOtherCompanies(list ? list.filter(c => c.id !== employee!.company.id) : undefined))
                 .catch(err => toast.current?.show({ severity: 'error', summary: 'Error al obtener empresas', detail: err.detail, life: 3000 }));
-    }, [employee, setRelationVisible]);
+    }, [employee, setRelationVisible, otherCompanies]);
 
     const openModal = (rel: SubcontractingRelationship) => {
         setSelectedRel(rel);
@@ -354,6 +354,9 @@ export const Subs: React.FC = () => {
                                         address: relationForm.address
                                     })
                                         .then((res: ResponseEntity<Company>) => {
+                                            let companies = otherCompanies ?? [];
+                                            companies.push(res.entity);
+                                            setOtherCompanies(companies);
                                             return createSubcontractRelationship(company!.id, res.entity.id, {
                                                 startDate: LocalDate.parse(relationForm.startDate),
                                                 endDate: relationForm.endDate ? LocalDate.parse(relationForm.endDate) : null,
